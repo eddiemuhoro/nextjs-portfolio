@@ -5,11 +5,13 @@ This guide will help you deploy your Next.js portfolio project on your Contabo V
 ## Prerequisites on VPS
 
 ### 1. Update your Ubuntu system
+
 ```bash
 sudo apt update && sudo apt upgrade -y
 ```
 
 ### 2. Install Docker
+
 ```bash
 # Install Docker
 curl -fsSL https://get.docker.com -o get-docker.sh
@@ -27,12 +29,14 @@ newgrp docker
 ```
 
 ### 3. Install Docker Compose
+
 ```bash
 sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 sudo chmod +x /usr/local/bin/docker-compose
 ```
 
 ### 4. Install Git (if not already installed)
+
 ```bash
 sudo apt install git -y
 ```
@@ -40,6 +44,7 @@ sudo apt install git -y
 ## Deployment Steps
 
 ### 1. Clone your repository on the VPS
+
 ```bash
 cd /home/$(whoami)
 git clone <your-repository-url> nextjs-portfolio
@@ -47,13 +52,17 @@ cd nextjs-portfolio
 ```
 
 ### 2. Configure your domain (Optional)
+
 If you have a domain name, edit the nginx.conf file:
+
 ```bash
 nano nginx.conf
 ```
+
 Replace `your-domain.com` with your actual domain name.
 
 ### 3. Deploy the application
+
 ```bash
 # Make the deployment script executable
 chmod +x deploy.sh
@@ -65,27 +74,33 @@ chmod +x deploy.sh
 ## Configuration Options
 
 ### Environment Variables
+
 Create a `.env` file in your project root for any environment variables:
+
 ```bash
 nano .env
 ```
 
 Add your variables:
+
 ```
 NODE_ENV=production
 # Add other environment variables as needed
 ```
 
 ### SSL Configuration (Optional)
+
 To enable HTTPS:
 
 1. Obtain SSL certificates (using Let's Encrypt):
+
 ```bash
 sudo apt install certbot python3-certbot-nginx -y
 sudo certbot certonly --standalone -d your-domain.com
 ```
 
 2. Create SSL directory and copy certificates:
+
 ```bash
 mkdir -p ssl
 sudo cp /etc/letsencrypt/live/your-domain.com/fullchain.pem ssl/your-domain.crt
@@ -96,6 +111,7 @@ sudo chown $(whoami):$(whoami) ssl/*
 3. Uncomment the SSL server block in `nginx.conf`
 
 4. Redeploy:
+
 ```bash
 ./deploy.sh
 ```
@@ -103,32 +119,38 @@ sudo chown $(whoami):$(whoami) ssl/*
 ## Management Commands
 
 ### View application logs
+
 ```bash
 docker-compose logs -f
 ```
 
 ### Stop the application
+
 ```bash
 docker-compose down
 ```
 
 ### Restart the application
+
 ```bash
 docker-compose restart
 ```
 
 ### Update the application
+
 ```bash
 git pull origin main  # or your main branch
 ./deploy.sh
 ```
 
 ### View running containers
+
 ```bash
 docker-compose ps
 ```
 
 ### Clean up Docker resources
+
 ```bash
 docker system prune -f
 ```
@@ -149,17 +171,20 @@ sudo ufw status
 ## Troubleshooting
 
 ### Application not accessible
+
 1. Check if containers are running: `docker-compose ps`
 2. Check logs: `docker-compose logs`
 3. Verify firewall settings
 4. Check if ports are open: `netstat -tulpn | grep :80`
 
 ### Build failures
+
 1. Check Docker logs: `docker-compose logs nextjs-portfolio`
 2. Ensure sufficient disk space: `df -h`
 3. Clear Docker cache: `docker system prune -a`
 
 ### Performance optimization
+
 1. Set up log rotation for Docker logs
 2. Monitor resource usage: `htop` or `docker stats`
 3. Consider using a CDN for static assets
@@ -167,11 +192,13 @@ sudo ufw status
 ## Monitoring
 
 ### Set up log rotation
+
 ```bash
 sudo nano /etc/docker/daemon.json
 ```
 
 Add:
+
 ```json
 {
   "log-driver": "json-file",
@@ -183,6 +210,7 @@ Add:
 ```
 
 Restart Docker:
+
 ```bash
 sudo systemctl restart docker
 ```
@@ -190,12 +218,14 @@ sudo systemctl restart docker
 ## Backup Strategy
 
 ### Backup your application data
+
 ```bash
 # Create backup script
 nano backup.sh
 ```
 
 Content:
+
 ```bash
 #!/bin/bash
 BACKUP_DIR="/home/$(whoami)/backups"
@@ -213,6 +243,7 @@ find $BACKUP_DIR -name "nextjs-portfolio-*.tar.gz" -mtime +7 -delete
 ```
 
 Make it executable and run:
+
 ```bash
 chmod +x backup.sh
 ./backup.sh
