@@ -1,8 +1,8 @@
-import { AiOutlineControl } from 'react-icons/ai';
-import { SanitizedThemeConfig } from '../../interfaces/sanitized-config';
-import { LOCAL_STORAGE_KEY_NAME } from '../../constants';
-import { skeleton } from '../../utils';
-import { MouseEvent } from 'react';
+import { AiOutlineControl } from "react-icons/ai";
+import { SanitizedThemeConfig } from "../../interfaces/sanitized-config";
+import { LOCAL_STORAGE_KEY_NAME } from "../../constants";
+import { skeleton } from "../../utils";
+import { MouseEvent } from "react";
 
 /**
  * Renders a theme changer component.
@@ -27,14 +27,15 @@ const ThemeChanger = ({
 }) => {
   const changeTheme = (
     e: MouseEvent<HTMLAnchorElement>,
-    selectedTheme: string,
+    selectedTheme: string
   ) => {
     e.preventDefault();
 
-    document.querySelector('html')?.setAttribute('data-theme', selectedTheme);
+    document.querySelector("html")?.setAttribute("data-theme", selectedTheme);
 
-    typeof window !== 'undefined' &&
+    if (typeof window !== "undefined") {
       localStorage.setItem(LOCAL_STORAGE_KEY_NAME, selectedTheme);
+    }
 
     setTheme(selectedTheme);
   };
@@ -46,9 +47,9 @@ const ThemeChanger = ({
           <h5 className="card-title">
             {loading ? (
               skeleton({
-                widthCls: 'w-20',
-                heightCls: 'h-8',
-                className: 'mb-1',
+                widthCls: "w-20",
+                heightCls: "h-8",
+                className: "mb-1",
               })
             ) : (
               <span className="text-base-content opacity-70">Theme</span>
@@ -56,18 +57,18 @@ const ThemeChanger = ({
           </h5>
           <span className="text-base-content text-opacity-40 capitalize text-sm">
             {loading
-              ? skeleton({ widthCls: 'w-16', heightCls: 'h-5' })
+              ? skeleton({ widthCls: "w-16", heightCls: "h-5" })
               : theme === themeConfig.defaultTheme
-                ? 'Default'
-                : theme}
+              ? "Default"
+              : theme}
           </span>
         </div>
         <div className="flex-0">
           {loading ? (
             skeleton({
-              widthCls: 'w-14 md:w-28',
-              heightCls: 'h-10',
-              className: 'mr-6',
+              widthCls: "w-14 md:w-28",
+              heightCls: "h-10",
+              className: "mr-6",
             })
           ) : (
             <div title="Change Theme" className="dropdown dropdown-end">
@@ -93,17 +94,17 @@ const ThemeChanger = ({
                   {[
                     themeConfig.defaultTheme,
                     ...themeConfig.themes.filter(
-                      (item) => item !== themeConfig.defaultTheme,
+                      (item) => item !== themeConfig.defaultTheme
                     ),
                   ].map((item, index) => (
                     <li key={index}>
                       {}
                       <a
                         onClick={(e) => changeTheme(e, item)}
-                        className={`${theme === item ? 'active' : ''}`}
+                        className={`${theme === item ? "active" : ""}`}
                       >
                         <span className="opacity-60 capitalize">
-                          {item === themeConfig.defaultTheme ? 'Default' : item}
+                          {item === themeConfig.defaultTheme ? "Default" : item}
                         </span>
                       </a>
                     </li>

@@ -1,17 +1,24 @@
-import { LOCAL_STORAGE_KEY_NAME } from '../constants';
-import { DEFAULT_CUSTOM_THEME } from '../constants/default-custom-theme';
-import { DEFAULT_THEMES } from '../constants/default-themes';
+import { LOCAL_STORAGE_KEY_NAME } from "../constants";
+import { DEFAULT_CUSTOM_THEME } from "../constants/default-custom-theme";
+import { DEFAULT_THEMES } from "../constants/default-themes";
 import {
   SanitizedConfig,
   SanitizedHotjar,
   SanitizedThemeConfig,
-} from '../interfaces/sanitized-config';
-import { hotjar } from 'react-hotjar';
-import colors from '../data/colors.json';
+  SanitizedPublication,
+} from "../interfaces/sanitized-config";
+import { hotjar } from "react-hotjar";
+import colors from "../data/colors.json";
+import CONFIG from "../../gitprofile.config";
+import React from "react";
+
+type Config = typeof CONFIG & {
+  publications?: SanitizedPublication[];
+};
 
 export const isDarkishTheme = (appliedTheme: string): boolean => {
-  return ['dark', 'halloween', 'forest', 'black', 'luxury', 'dracula'].includes(
-    appliedTheme,
+  return ["dark", "halloween", "forest", "black", "luxury", "dracula"].includes(
+    appliedTheme
   );
 };
 
@@ -24,7 +31,7 @@ type Colors = {
 };
 
 export const getSanitizedConfig = (
-  config: Config,
+  config: Config
 ): SanitizedConfig | Record<string, never> => {
   try {
     return {
@@ -34,10 +41,10 @@ export const getSanitizedConfig = (
       projects: {
         github: {
           display: config?.projects?.github?.display ?? true,
-          header: config?.projects?.github?.header || 'Github Projects',
-          mode: config?.projects?.github?.mode || 'automatic',
+          header: config?.projects?.github?.header || "Github Projects",
+          mode: config?.projects?.github?.mode || "automatic",
           automatic: {
-            sortBy: config?.projects?.github?.automatic?.sortBy || 'stars',
+            sortBy: config?.projects?.github?.automatic?.sortBy || "stars",
             limit: config?.projects?.github?.automatic?.limit || 8,
             exclude: {
               forks:
@@ -51,7 +58,7 @@ export const getSanitizedConfig = (
           },
         },
         external: {
-          header: config?.projects?.external?.header || 'My Projects',
+          header: config?.projects?.external?.header || "My Projects",
           projects: config?.projects?.external?.projects || [],
         },
       },
@@ -80,7 +87,7 @@ export const getSanitizedConfig = (
         researchGate: config?.social?.researchGate,
       },
       resume: {
-        fileUrl: config?.resume?.fileUrl || '',
+        fileUrl: config?.resume?.fileUrl || "",
       },
       skills: config?.skills || [],
       experiences:
@@ -89,16 +96,16 @@ export const getSanitizedConfig = (
             experience.company ||
             experience.position ||
             experience.from ||
-            experience.to,
+            experience.to
         ) || [],
       certifications:
         config?.certifications?.filter(
           (certification) =>
-            certification.year || certification.name || certification.body,
+            certification.year || certification.name || certification.body
         ) || [],
       educations:
         config?.educations?.filter(
-          (item) => item.institution || item.degree || item.from || item.to,
+          (item) => item.institution || item.degree || item.from || item.to
         ) || [],
       publications: config?.publications?.filter((item) => item.title) || [],
       googleAnalytics: {
@@ -109,8 +116,8 @@ export const getSanitizedConfig = (
         snippetVersion: config?.hotjar?.snippetVersion || 6,
       },
       blog: {
-        username: config?.blog?.username || '',
-        source: config?.blog?.source || 'dev',
+        username: config?.blog?.username || "",
+        source: config?.blog?.source || "dev",
         limit: config?.blog?.limit || 5,
         display: !!config?.blog?.username && !!config?.blog?.source,
       },
@@ -134,21 +141,21 @@ export const getSanitizedConfig = (
           neutral:
             config?.themeConfig?.customTheme?.neutral ||
             DEFAULT_CUSTOM_THEME.neutral,
-          'base-100':
-            config?.themeConfig?.customTheme?.['base-100'] ||
-            DEFAULT_CUSTOM_THEME['base-100'],
-          '--rounded-box':
-            config?.themeConfig?.customTheme?.['--rounded-box'] ||
-            DEFAULT_CUSTOM_THEME['--rounded-box'],
-          '--rounded-btn':
-            config?.themeConfig?.customTheme?.['--rounded-btn'] ||
-            DEFAULT_CUSTOM_THEME['--rounded-btn'],
+          "base-100":
+            config?.themeConfig?.customTheme?.["base-100"] ||
+            DEFAULT_CUSTOM_THEME["base-100"],
+          "--rounded-box":
+            config?.themeConfig?.customTheme?.["--rounded-box"] ||
+            DEFAULT_CUSTOM_THEME["--rounded-box"],
+          "--rounded-btn":
+            config?.themeConfig?.customTheme?.["--rounded-btn"] ||
+            DEFAULT_CUSTOM_THEME["--rounded-btn"],
         },
       },
       footer: config?.footer,
       enablePWA: config?.enablePWA ?? true,
     };
-  } catch (error) {
+  } catch {
     return {};
   }
 };
@@ -159,7 +166,7 @@ export const getInitialTheme = (themeConfig: SanitizedThemeConfig): string => {
   }
 
   if (
-    typeof window !== 'undefined' &&
+    typeof window !== "undefined" &&
     !(localStorage.getItem(LOCAL_STORAGE_KEY_NAME) === null)
   ) {
     const savedTheme = localStorage.getItem(LOCAL_STORAGE_KEY_NAME);
@@ -170,9 +177,9 @@ export const getInitialTheme = (themeConfig: SanitizedThemeConfig): string => {
   }
 
   if (themeConfig.respectPrefersColorScheme && !themeConfig.disableSwitch) {
-    return typeof window !== 'undefined' &&
-      window.matchMedia('(prefers-color-scheme: dark)').matches
-      ? 'dark'
+    return typeof window !== "undefined" &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "dark"
       : themeConfig.defaultTheme;
   }
 
@@ -183,7 +190,7 @@ export const skeleton = ({
   widthCls = null,
   heightCls = null,
   style = {} as React.CSSProperties,
-  shape = 'rounded-full',
+  shape = "rounded-full",
   className = null,
 }: {
   widthCls?: string | null;
@@ -191,8 +198,8 @@ export const skeleton = ({
   style?: React.CSSProperties;
   shape?: string;
   className?: string | null;
-}): JSX.Element => {
-  const classNames = ['bg-base-300', 'animate-pulse', shape];
+}): React.JSX.Element => {
+  const classNames = ["bg-base-300", "animate-pulse", shape];
   if (className) {
     classNames.push(className);
   }
@@ -203,7 +210,7 @@ export const skeleton = ({
     classNames.push(heightCls);
   }
 
-  return <div className={classNames.join(' ')} style={style} />;
+  return <div className={classNames.join(" ")} style={style} />;
 };
 
 export const setupHotjar = (hotjarConfig: SanitizedHotjar): void => {
@@ -217,7 +224,7 @@ export const ga = {
   event(action: string, params: EventParams): void {
     try {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (window as any)?.gtag('event', action, params);
+      (window as any)?.gtag("event", action, params);
     } catch (error) {
       console.error(error);
     }
@@ -226,9 +233,9 @@ export const ga = {
 
 export const getLanguageColor = (language: string): string => {
   const languageColors: Colors = colors;
-  if (typeof languageColors[language] !== 'undefined') {
-    return languageColors[language].color || 'gray';
+  if (typeof languageColors[language] !== "undefined") {
+    return languageColors[language].color || "gray";
   } else {
-    return 'gray';
+    return "gray";
   }
 };
