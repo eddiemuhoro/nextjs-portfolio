@@ -25,9 +25,9 @@ services:
       - "8069:8069"
     environment:
       # Database connection settings
-      - HOST=postgres # Connect to postgres container
-      - USER=odoo # Database username
-      - PASSWORD=odoo_secure_pass_123 # Database password
+      - HOST=${ODOO_DB_HOST}
+      - USER=${ODOO_DB_USER}
+      - PASSWORD=${ODOO_DB_PASSWORD}
     volumes:
       - odoo-web-data:/var/lib/odoo # User data, attachments
       - odoo-config:/etc/odoo # Configuration files
@@ -43,10 +43,10 @@ services:
     restart: unless-stopped
     environment:
       # Database configuration
-      - POSTGRES_DB=postgres # Default database name
-      - POSTGRES_USER=odoo # Database user
-      - POSTGRES_PASSWORD=odoo_secure_pass_123 # Database password
-      - PGDATA=/var/lib/postgresql/data/pgdata # Data directory
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - PGDATA=${PGDATA}
     volumes:
       # Persistent storage for database
       - postgres-data:/var/lib/postgresql/data/pgdata
