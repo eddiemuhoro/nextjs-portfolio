@@ -17,6 +17,42 @@ services:
     networks:
       - portfolio-network
 
+  odoo:
+    image: odoo:17.0
+    container_name: odoo-ecommerce
+    restart: unless-stopped
+    ports:
+      - "8069:8069"
+    environment:
+      # Database connection settings
+      - HOST=postgres # Connect to postgres container
+      - USER=odoo # Database username
+      - PASSWORD=odoo_secure_pass_123 # Database password
+    volumes:
+      - odoo-web-data:/var/lib/odoo # User data, attachments
+      - odoo-config:/etc/odoo # Configuration files
+      - odoo-addons:/mnt/extra-addons # Custom modules
+    depends_on:
+      - postgres
+    networks:
+      - portfolio-network
+
+  postgres:
+    image: postgres:15
+    container_name: odoo-postgres
+    restart: unless-stopped
+    environment:
+      # Database configuration
+      - POSTGRES_DB=postgres # Default database name
+      - POSTGRES_USER=odoo # Database user
+      - POSTGRES_PASSWORD=odoo_secure_pass_123 # Database password
+      - PGDATA=/var/lib/postgresql/data/pgdata # Data directory
+    volumes:
+      # Persistent storage for database
+      - postgres-data:/var/lib/postgresql/data/pgdata
+    networks:
+      - portfolio-network
+
   # Optional: Add nginx reverse proxy for production
   nginx:
     image: nginx:alpine
@@ -54,3 +90,7 @@ networks:
 # Add volumes section
 volumes:
   portainer_data:
+  odoo-web-data: # Stores Odoo files, attachments, user data
+  odoo-config: # Stores Odoo configuration
+  odoo-addons: # Stores custom Odoo modules
+  postgres-data: # Stores PostgreSQL database files
