@@ -179,6 +179,7 @@ const CONFIG = {
     "Python",
     "React",
     "Node.js",
+    "Express",
     "Next.js",
     "Django",
     "FastAPI",
