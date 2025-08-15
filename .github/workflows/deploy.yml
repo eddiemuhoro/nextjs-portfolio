@@ -20,7 +20,7 @@ jobs:
           debug: true # Enable debug mode to see more details
           script: |
             echo "Starting deployment..."
-            cd /home/$(whoami)/nextjs-portfolio || exit 1
+            cd nextjs-portfolio || exit 1
             echo "Current directory: $(pwd)"
             git pull origin main
             echo "Running deploy script..."
