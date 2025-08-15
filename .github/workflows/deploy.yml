@@ -2,8 +2,8 @@ name: Deploy to VPS
 
 on:
   push:
-    branches: [main] # Change to your default branch if different
-  workflow_dispatch: # Allows manual triggering from GitHub
+    branches: [main]
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -11,12 +11,18 @@ jobs:
 
     steps:
       - name: Deploy to VPS
-        uses: appleboy/ssh-action@v0.1.7
+        uses: appleboy/ssh-action@v1.0.3 # Updated to latest version
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USERNAME }}
           key: ${{ secrets.VPS_SSH_KEY }}
+          port: 22
+          debug: true # Enable debug mode to see more details
           script: |
-            cd /home/$(whoami)/nextjs-portfolio
+            echo "Starting deployment..."
+            cd /home/$(whoami)/nextjs-portfolio || exit 1
+            echo "Current directory: $(pwd)"
             git pull origin main
+            echo "Running deploy script..."
             ./deploy.sh
+            echo "Deployment completed!"
