@@ -1,0 +1,56 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model BlogPost {
+  id              Int      @id @default(autoincrement())
+  title           String
+  slug            String   @unique
+  content         String
+  excerpt         String?
+  featured_image  String?
+  author_id       Int?
+  status          String   @default("draft")
+  published_at    DateTime?
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+  tags            String[]
+  meta_description String?
+  reading_time    Int?
+
+  categories PostCategory[]
+
+  @@map("blog_posts")
+}
+
+model BlogCategory {
+  id          Int      @id @default(autoincrement())
+  name        String
+  slug        String   @unique
+  description String?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  posts PostCategory[]
+
+  @@map("blog_categories")
+}
+
+model PostCategory {
+  post_id     Int
+  category_id Int
+  post        BlogPost     @relation(fields: [post_id], references: [id], onDelete: Cascade)
+  category    BlogCategory @relation(fields: [category_id], references: [id], onDelete: Cascade)
+
+  @@id([post_id, category_id])
+  @@map("post_categories")
+} 
