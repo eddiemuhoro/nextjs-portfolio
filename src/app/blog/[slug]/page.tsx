@@ -1,12 +1,13 @@
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import BlogPost from "@/components/blog/BlogPost";
 import { BlogPost as BlogPostType } from "@/interfaces/blog";
 
 interface BlogPostPageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 async function getBlogPost(slug: string): Promise<BlogPostType | null> {
@@ -27,10 +28,23 @@ async function getBlogPost(slug: string): Promise<BlogPostType | null> {
     }
 
     return {
-      ...post,
-      status: post.status as "published" | "draft" | "archived",
-      categories: post.categories.map((pc) => pc.category),
-    } as BlogPostType;
+      id: post.id,
+      title: post.title,
+      slug: post.slug,
+      content: post.content,
+      excerpt: post.excerpt,
+      featured_image: post.featured_image,
+      status: post.status,
+      tags: post.tags,
+      meta_description: post.meta_description,
+      created_at: post.created_at,
+      updated_at: post.updated_at,
+      published_at: post.published_at,
+      categories: post.categories.map((cat) => ({
+        ...cat.category,
+        description: cat.category.description || undefined,
+      })),
+    };
   } catch (error) {
     console.error("Error fetching blog post:", error);
     return null;
@@ -38,7 +52,8 @@ async function getBlogPost(slug: string): Promise<BlogPostType | null> {
 }
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
-  const post = await getBlogPost(params.slug);
+  const { slug } = await params;
+  const post = await getBlogPost(slug);
 
   if (!post) {
     notFound();
@@ -62,9 +77,9 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               </p>
             </div>
             <div className="flex gap-4">
-              <a href="/blog" className="btn btn-outline btn-sm">
+              <Link href="/blog" className="btn btn-outline btn-sm">
                 ← Back to Blog
-              </a>
+              </Link>
             </div>
           </div>
         </div>
