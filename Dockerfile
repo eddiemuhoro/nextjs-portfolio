@@ -9,17 +9,24 @@ WORKDIR /app
 
 # Install dependencies based on the preferred package manager
 COPY package.json pnpm-lock.yaml* ./
+# Copy prisma schema for client generation
+COPY prisma/schema.prisma ./prisma/
 # Install pnpm globally and use it to install dependencies
 RUN npm install -g pnpm && pnpm install --no-frozen-lockfile
+# Generate Prisma Client
+RUN pnpm exec prisma generate
 
 # Rebuild the source code only when needed
 FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/prisma ./prisma
 COPY . .
 
+# Generate Prisma Client in builder stage
+RUN npm install -g pnpm && pnpm exec prisma generate
 # Build the application
-RUN npm install -g pnpm && pnpm build
+RUN pnpm build
 
 # Production image, copy all the files and run next
 FROM base AS runner
