@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { formatDistance } from "date-fns";
 import { BlogPost } from "@/interfaces/blog";
@@ -22,11 +22,7 @@ export default function BlogList({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchPosts();
-  }, []);
-
-  const fetchPosts = async () => {
+  const fetchPosts = useCallback(async () => {
     try {
       setLoading(true);
       const response = await fetch("/api/blog/posts");
@@ -42,7 +38,11 @@ export default function BlogList({
     } finally {
       setLoading(false);
     }
-  };
+  }, [limit]);
+
+  useEffect(() => {
+    fetchPosts();
+  }, [fetchPosts]);
 
   const renderSkeleton = () => {
     const array = [];
