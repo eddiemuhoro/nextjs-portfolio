@@ -1,32 +1,32 @@
-'use client';
+"use client";
 
-import { useCallback, useEffect, useState } from 'react';
-import axios, { AxiosError } from 'axios';
-import { formatDistance } from 'date-fns';
-import CONFIG from '../../gitprofile.config';
-import { getInitialTheme, getSanitizedConfig, setupHotjar } from '../utils';
-import { SanitizedConfig } from '../interfaces/sanitized-config';
-import { Profile } from '../interfaces/profile';
-import { GithubProject } from '../interfaces/github-project';
-import { DEFAULT_THEMES } from '../constants/default-themes';
-import { BG_COLOR } from '../constants';
+import { useCallback, useEffect, useState } from "react";
+import axios, { AxiosError } from "axios";
+import { formatDistance } from "date-fns";
+import CONFIG from "../../gitprofile.config";
+import { getInitialTheme, getSanitizedConfig, setupHotjar } from "../utils";
+import { SanitizedConfig } from "../interfaces/sanitized-config";
+import { Profile } from "../interfaces/profile";
+import { GithubProject } from "../interfaces/github-project";
+import { DEFAULT_THEMES } from "../constants/default-themes";
+import { BG_COLOR } from "../constants";
 
 // Import components
-import AvatarCard from './avatar-card/index';
-import DetailsCard from './details-card/index';
-import SkillCard from './skill-card/index';
-import ExperienceCard from './experience-card/index';
-import EducationCard from './education-card/index';
-import CertificationCard from './certification-card/index';
-import GithubProjectCard from './github-project-card/index';
-import ExternalProjectCard from './external-project-card/index';
-import BlogCard from './blog-card/index';
-import PublicationCard from './publication-card/index';
-import Stats from './wakatime/Stats';
-import FiverrGig from './fiverr/gigs';
-import Footer from './footer/index';
-import ThemeChanger from './theme-changer/index';
-import ErrorPage from './error-page/index';
+import AvatarCard from "./avatar-card/index";
+import DetailsCard from "./details-card/index";
+import SkillCard from "./skill-card/index";
+import ExperienceCard from "./experience-card/index";
+import EducationCard from "./education-card/index";
+import CertificationCard from "./certification-card/index";
+import GithubProjectCard from "./github-project-card/index";
+import ExternalProjectCard from "./external-project-card/index";
+import BlogCard from "./blog-card/index";
+import PublicationCard from "./publication-card/index";
+import Stats from "./wakatime/Stats";
+import FiverrGig from "./fiverr/gigs";
+import Footer from "./footer/index";
+import ThemeChanger from "./theme-changer/index";
+import ErrorPage from "./error-page/index";
 
 interface CustomError {
   status: string;
@@ -35,32 +35,32 @@ interface CustomError {
 }
 
 const GENERIC_ERROR: CustomError = {
-  status: '500',
-  title: 'Something went wrong!',
-  subTitle: 'Please try again later.',
+  status: "500",
+  title: "Something went wrong!",
+  subTitle: "Please try again later.",
 };
 
 const INVALID_CONFIG_ERROR: CustomError = {
-  status: '500',
-  title: 'Invalid Configuration!',
-  subTitle: 'Please check your configuration file.',
+  status: "500",
+  title: "Invalid Configuration!",
+  subTitle: "Please check your configuration file.",
 };
 
 const INVALID_GITHUB_USERNAME_ERROR: CustomError = {
-  status: '404',
-  title: 'GitHub User Not Found!',
-  subTitle: 'Please check your GitHub username.',
+  status: "404",
+  title: "GitHub User Not Found!",
+  subTitle: "Please check your GitHub username.",
 };
 
 const setTooManyRequestError = (reset: string): CustomError => ({
-  status: '403',
-  title: 'Too Many Requests!',
+  status: "403",
+  title: "Too Many Requests!",
   subTitle: `Please try again ${reset}.`,
 });
 
 const GitProfile = () => {
   const [sanitizedConfig] = useState<SanitizedConfig | Record<string, never>>(
-    getSanitizedConfig(CONFIG),
+    getSanitizedConfig(CONFIG)
   );
   const [theme, setTheme] = useState<string>(DEFAULT_THEMES[0]);
   const [error, setError] = useState<CustomError | null>(null);
@@ -70,7 +70,7 @@ const GitProfile = () => {
 
   const getGithubProjects = useCallback(
     async (publicRepoCount: number): Promise<GithubProject[]> => {
-      if (sanitizedConfig.projects.github.mode === 'automatic') {
+      if (sanitizedConfig.projects.github.mode === "automatic") {
         if (publicRepoCount === 0) {
           return [];
         }
@@ -78,13 +78,16 @@ const GitProfile = () => {
         const excludeRepo =
           sanitizedConfig.projects.github.automatic.exclude.projects
             .map((project) => `+-repo:${project}`)
-            .join('');
+            .join("");
 
-        const query = `user:${sanitizedConfig.github.username}+fork:${!sanitizedConfig.projects.github.automatic.exclude.forks}${excludeRepo}`;
+        const query = `user:${
+          sanitizedConfig.github.username
+        }+fork:${!sanitizedConfig.projects.github.automatic.exclude
+          .forks}${excludeRepo}`;
         const url = `https://api.github.com/search/repositories?q=${query}&sort=${sanitizedConfig.projects.github.automatic.sortBy}&per_page=${sanitizedConfig.projects.github.automatic.limit}&type=Repositories`;
 
         const repoResponse = await axios.get(url, {
-          headers: { 'Content-Type': 'application/vnd.github.v3+json' },
+          headers: { "Content-Type": "application/vnd.github.v3+json" },
         });
         const repoData = repoResponse.data;
 
@@ -95,19 +98,19 @@ const GitProfile = () => {
         }
         const repos = sanitizedConfig.projects.github.manual.projects
           .map((project) => `+repo:${project}`)
-          .join('');
+          .join("");
 
         const url = `https://api.github.com/search/repositories?q=${repos}&type=Repositories`;
 
         const repoResponse = await axios.get(url, {
-          headers: { 'Content-Type': 'application/vnd.github.v3+json' },
+          headers: { "Content-Type": "application/vnd.github.v3+json" },
         });
         const repoData = repoResponse.data;
 
         return repoData.items;
       }
     },
-    [sanitizedConfig],
+    [sanitizedConfig]
   );
 
   const loadData = useCallback(async () => {
@@ -115,16 +118,16 @@ const GitProfile = () => {
       setLoading(true);
 
       const response = await axios.get(
-        `https://api.github.com/users/${sanitizedConfig.github.username}`,
+        `https://api.github.com/users/${sanitizedConfig.github.username}`
       );
       const data = response.data;
 
       setProfile({
         avatar: data.avatar_url,
-        name: data.name || ' ',
-        bio: data.bio || '',
-        location: data.location || '',
-        company: data.company || '',
+        name: data.name || " ",
+        bio: data.bio || "",
+        location: data.location || "",
+        company: data.company || "",
       });
 
       if (!sanitizedConfig.projects.github.display) {
@@ -151,25 +154,25 @@ const GitProfile = () => {
   }, [sanitizedConfig, loadData]);
 
   useEffect(() => {
-    if (typeof document !== 'undefined') {
+    if (typeof document !== "undefined") {
       if (theme) {
-        document.documentElement.setAttribute('data-theme', theme);
+        document.documentElement.setAttribute("data-theme", theme);
       }
     }
   }, [theme]);
 
   const handleError = (error: AxiosError | Error): void => {
-    console.error('Error:', error);
+    console.error("Error:", error);
 
     if (error instanceof AxiosError) {
       try {
         const reset = formatDistance(
-          new Date(error.response?.headers?.['x-ratelimit-reset'] * 1000),
+          new Date(error.response?.headers?.["x-ratelimit-reset"] * 1000),
           new Date(),
-          { addSuffix: true },
+          { addSuffix: true }
         );
 
-        if (typeof error.response?.status === 'number') {
+        if (typeof error.response?.status === "number") {
           switch (error.response.status) {
             case 403:
               setError(setTooManyRequestError(reset));
