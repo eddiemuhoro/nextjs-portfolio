@@ -2,14 +2,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
 interface RouteParams {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
-    const { slug } = params;
+    const { slug } = await params;
 
     const post = await prisma.blogPost.findUnique({
       where: { slug },
@@ -43,7 +43,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 
 export async function PUT(request: NextRequest, { params }: RouteParams) {
   try {
-    const { slug } = params;
+    const { slug } = await params;
     const body = await request.json();
 
     const post = await prisma.blogPost.update({
@@ -72,7 +72,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 
 export async function DELETE(request: NextRequest, { params }: RouteParams) {
   try {
-    const { slug } = params;
+    const { slug } = await params;
 
     await prisma.blogPost.delete({
       where: { slug },
