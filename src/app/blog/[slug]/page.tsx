@@ -40,10 +40,12 @@ async function getBlogPost(slug: string): Promise<BlogPostType | null> {
       created_at: post.created_at,
       updated_at: post.updated_at,
       published_at: post.published_at,
-      categories: post.categories.map((cat) => ({
-        ...cat.category,
-        description: cat.category.description || undefined,
-      })),
+      categories: post.categories.map(
+        (cat: { category: { description: string | undefined } }) => ({
+          ...cat.category,
+          description: cat.category.description || undefined,
+        })
+      ),
     };
   } catch (error) {
     console.error("Error fetching blog post:", error);
